@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<string>yet</string>
+	<string>undergound</string>
+	<string>attic</string>
+	<string>water</string>
+	<string>fire</string>
+	<string>earth</string>
+	<string>vehicle</string>
+	<string>design</string>
+	<string>kitchen</string>
+	<string>space</string>
+	<string>windows</string>
+	<string>notebook</string>
+	<string>tomorrow</string>
+	<string>day</string>
+	<string>week</string>
+	<string>chair</string>
+	<string>table</string>
+	<string>hang</string>
+	<string>word</string>
+	<string>guess</string>
+</array>
+</plist>
