@@ -10,6 +10,9 @@ import UIKit
 
 class SGCViewController: UIViewController {
     
+    
+    @IBOutlet weak var gameSelectionStack: UIStackView!
+    
     @IBAction func playTicTacToe(_ sender: UIButton) {
         let gameVC = self.storyboard?.instantiateViewController(withIdentifier: "tttMenu") as! TTTMenuViewController
         self.navigationController?.pushViewController(gameVC, animated: true)

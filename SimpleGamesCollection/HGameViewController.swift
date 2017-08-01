@@ -16,13 +16,21 @@ class HGameViewController: UIViewController {
     private var correctGuess = false
     private var arrayOfChars = [Character]()
     
-    @IBOutlet weak var drawingBoard: HDrawingBoard!
+    private var drawingBoard: HDrawingBoard!
+    
     @IBOutlet weak var displayWord: UILabel!
-    @IBOutlet var keysCollection: [UIButton]!
     @IBOutlet weak var gameStatus: UILabel!
+    
+    private var arrayOfObjs = [UIButton]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        drawingBoard = HDrawingBoard(frame: self.view.frame)
+        drawingBoard.backgroundColor = UIColor.white
+        self.view.addSubview(drawingBoard)
+        self.drawingBoard.addSubview(displayWord)
+        self.drawingBoard.addSubview(gameStatus)
         
         let newGame = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleNewGame))
         navigationItem.rightBarButtonItem = newGame
@@ -33,17 +41,60 @@ class HGameViewController: UIViewController {
         
         totalWords = wordsContainer.count
         
+        createHangKeyboard(x: self.view.frame.width/2, y: self.view.frame.height)
+        
         wordToGuess = assignWord(wordsContainer: wordsContainer, totalWords: totalWords)
         
         handleNewGame()
     }
     
-    @IBAction func onKey(_ sender: UIButton) {
+    private func constructObjectRect(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, storeIn arrayOfObjs: inout [UIButton], withTag tag: inout Int) {
+        
+        let obj = UIButton(frame: CGRect(x: x, y: y, width: width, height: height))
+        setProperties(for: obj, andTag: tag)
+        arrayOfObjs.append(obj)
+    }
+    
+    private func setProperties(for item: UIButton, andTag tag: Int) {
+        item.addTarget(self, action: #selector(onKey), for: .touchUpInside)
+        item.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
+        item.titleLabel?.font = UIFont.systemFont(ofSize: 20)
+        item.layer.borderColor = UIColor.black.cgColor
+        item.setTitle(String(UnicodeScalar(UInt8(tag))), for: .normal)
+    }
+    
+    private func createHangKeyboard(x: CGFloat, y: CGFloat) {
+        
+        var tag = 97
+        var y = y - 120
+        
+        for i in 0...2 {
+            
+            var x = x
+            x = x - (30 * (9 - CGFloat(i)))/2
+            
+            for _ in 0..<9-i {
+                
+                constructObjectRect(x: x, y: y, width: 30, height: 30, storeIn: &arrayOfObjs, withTag: &tag)
+                
+                tag += 1
+                x += 30
+            }
+            y += 30
+        }
+        
+        for item in arrayOfObjs {
+            drawingBoard.addSubview(item)
+        }
+    }
+    
+    @objc func onKey(_ sender: UIButton) {
         
         displayWord.text = " "
         correctGuess = false
         var i = 0
         sender.isEnabled = false
+        sender.setTitleColor(UIColor.gray, for: .normal)
         
         for char in wordToGuess.characters {
             
@@ -89,7 +140,7 @@ class HGameViewController: UIViewController {
             }
             
             if gameEnded {
-                for key in keysCollection {
+                for key in arrayOfObjs {
                     key.isEnabled = false
                 }
                 
@@ -101,7 +152,7 @@ class HGameViewController: UIViewController {
             displayWord.text = wordToGuess
             gameStatus.text = "Game Over"
             
-            for key in keysCollection {
+            for key in arrayOfObjs {
                 key.isEnabled = false
             }
         }
@@ -123,7 +174,7 @@ class HGameViewController: UIViewController {
             displayWord.text = displayWord.text! + "_ "
         }
         
-        for key in keysCollection {
+        for key in arrayOfObjs {
             key.isEnabled = true
         }
     }

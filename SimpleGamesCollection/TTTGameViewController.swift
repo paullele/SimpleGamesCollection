@@ -12,6 +12,8 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var displayGameStatus: UILabel!
     
+    private var drawingBoard: UIView!
+    
     private let gridSize: CGFloat = 3
     private var container = [UIButton]()
     private let gameEngine = TTTGameEngine()
@@ -143,18 +145,23 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        drawingBoard = TTTDrawingBoard(frame: self.view.frame)
+        drawingBoard.backgroundColor = UIColor.white
+        
+        self.view.addSubview(drawingBoard);
+        
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
         let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
         
         self.navigationItem.leftBarButtonItem = backButton
         
-        pWidth = CGFloat(Int(self.view.frame.width)/Int(gridSize))
+        pWidth = CGFloat((Int(self.view.frame.width) - (Int(self.view.frame.width) % 100))/Int(gridSize))
         pHeight = pWidth
-        
+                
         //set the grid origins
-        var originX = self.view.frame.width/2 - ((pWidth * gridSize) / 2)
-        var originY = self.view.frame.height/2 - ((pHeight * gridSize) / 2)
+        var originX = ((self.view.frame.width/2 - ((pWidth * gridSize) / 2)))
+        var originY = ((self.view.frame.height/2 - ((pHeight * gridSize) / 2)))
         
         //construct the grid interactive cells
         for _ in 0 ..< Int(gridSize) {
@@ -172,7 +179,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         for item in container {
             self.view.addSubview(item)
         }
-        
         
         if computerGoesFirst! {
             signaturesInit = TTTSignatures(playerSignature: "0", computerSignature: "X")

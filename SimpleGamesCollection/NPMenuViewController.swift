@@ -50,5 +50,4 @@ class NPMenuViewController: UIViewController {
     }
     
     @IBAction func unwindToNPMenu(segue: UIStoryboardSegue) {}
-
 }

@@ -9,25 +9,13 @@
 import Foundation
 
 class TOGameEngine {
-    
-    private var numberOfSticks = 21
-    
-    func withdrawSticks(_ number: Int) {
-        numberOfSticks -= number
-    }
-    
-    func computerDecisionSmart(_ number: Int) -> Int {
+
+    func takeSticks(_ number: Int) -> Int {
         
-        if ((number - 2) % 3 == 0 || number - 2 == 0 || gameStatus == 1) {
+        if ((number - 2) % 3 == 0 || number - 2 == 0 || number == 1) {
             return 1
         } else {
             return 2
-        }
-    }
-    
-    var gameStatus: Int {
-        get {
-            return numberOfSticks
         }
     }
 }

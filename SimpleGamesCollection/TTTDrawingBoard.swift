@@ -24,9 +24,12 @@ class TTTDrawingBoard: UIView {
     
     private var cellSize: CGFloat!
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        cellSize = CGFloat(Int(self.bounds.width)/Int(3))
     }
     
     private func pathForRow(number: Row, startX: CGFloat, startY: CGFloat, endX: CGFloat, endY: CGFloat) -> UIBezierPath {
@@ -77,6 +80,8 @@ class TTTDrawingBoard: UIView {
     }
     
     override func draw(_ rect: CGRect) {
+        
+        cellSize = CGFloat((Int(frame.width) - (Int(frame.width) % 100))/Int(3))
         
         pathForRow(number: .One, startX: self.frame.width/2 - cellSize/2, startY: self.frame.height/2 - (cellSize + cellSize/2), endX: self.frame.width/2 - cellSize/2, endY: self.frame.height/2 + (cellSize + cellSize/2)).stroke()
         pathForRow(number: .Two, startX: self.frame.width/2 + cellSize/2, startY: self.frame.height/2 - (cellSize + cellSize/2), endX: self.frame.width/2 + cellSize/2, endY: self.frame.height/2 + (cellSize + cellSize/2)).stroke()

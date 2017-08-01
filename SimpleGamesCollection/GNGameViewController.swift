@@ -44,6 +44,10 @@ class GNGameViewController: UIViewController {
         secretNumber = gameLogic.generateNumber(upTo: range!)
         attemptsStatus.text = String(attempts!)
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
 
     private func manageEndGame() {
         guessButton.isUserInteractionEnabled = false

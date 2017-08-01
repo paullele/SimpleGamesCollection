@@ -21,6 +21,12 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
     
     fileprivate var gameEnded = false
     
+    private var numberOfSticks: Int = 21 {
+        didSet {
+            updateSticksLeft(with: numberOfSticks)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -37,6 +43,10 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
                 self.computerTakesSticks()
             })
         }
+    }
+    
+    func updateSticksLeft(with number: Int) {
+        sticksLeft.text = String(number)
     }
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -62,8 +72,7 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         let takenNumber = Int(sender.currentTitle!)
         
-        game.withdrawSticks(takenNumber!)
-        displaySticksLeft = game.gameStatus
+        numberOfSticks -= takenNumber!
         
         if takenNumber == 1 {
             displayMessage.text = "Player takes 1 stick"
@@ -71,7 +80,7 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
             displayMessage.text = "Player takes 2 sticks"
         }
         
-        if displaySticksLeft <= 0 {
+        if numberOfSticks <= 0 {
             displayMessage.text = "Computer wins"
             gameEnded = true
         } else {
@@ -106,18 +115,18 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func computerTakesSticks() {
-
-        game.withdrawSticks(game.computerDecisionSmart(displaySticksLeft))
         
-        if game.computerDecisionSmart(displaySticksLeft) == 1 {
+        let computerTakesSticks = game.takeSticks(numberOfSticks)
+
+        numberOfSticks -= computerTakesSticks
+        
+        if computerTakesSticks == 1 {
             displayMessage.text = "Computer takes 1 stick"
         } else {
             displayMessage.text = "Computer takes 2 sticks"
         }
         
-        displaySticksLeft = game.gameStatus
-        
-        if displaySticksLeft <= 0 {
+        if numberOfSticks <= 0 {
             gameEnded = true
             displayMessage.text = "Player wins"
             playersTurn = false
@@ -126,16 +135,6 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         playersTurn = true
         managePlayersButtons()
-    }
-
-    
-    var displaySticksLeft: Int {
-        get {
-            return Int(sticksLeft.text!)!
-        }
-        set {
-            sticksLeft.text = String(game.gameStatus)
-        }
     }
 }
 
