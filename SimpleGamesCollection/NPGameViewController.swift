@@ -12,11 +12,13 @@ class NPGameViewController: UIViewController, UIGestureRecognizerDelegate {
     
     var bound = 0
     var gridSize: CGFloat = 3
-    fileprivate var container = [UIButton]()
-    fileprivate var tagCount = 0
+    var container = [UIButton]()
+    var cellTag = 0;
     fileprivate var puzzleArray: [Int] = []
-    var pWidth: CGFloat = 100
-    var pHeight: CGFloat = 100
+    
+    var cellSize: CGFloat = 100
+    var startX: CGFloat!
+    var startY: CGFloat!
     
     private let gameEninge = NPGameEngine()
     
@@ -24,8 +26,7 @@ class NPGameViewController: UIViewController, UIGestureRecognizerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        pWidth = CGFloat(Int(self.view.frame.width)/Int(gridSize)) - 10
-        pHeight = pWidth
+        cellSize = CGFloat(Int(self.view.frame.width)/Int(gridSize)) - 10
         
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
@@ -36,11 +37,11 @@ class NPGameViewController: UIViewController, UIGestureRecognizerDelegate {
         gameEninge.generatePuzzle(piece: &puzzleArray, upTo: bound)
         
         //set the grid origins
-        var originX = self.view.frame.width/2 - ((pWidth * gridSize) / 2)
-        var originY = self.view.frame.height/2 - ((pHeight * gridSize) / 2)
+        startX = self.view.frame.width/2 - ((cellSize * gridSize) / 2)
+        startY = self.view.frame.height/2 - ((cellSize * gridSize) / 2)
         
         //construct the grid
-        constructTheGrid(gridSize: gridSize, bound: bound, originX: &originX, originY: &originY, pWidth: &pWidth, pHeight: &pHeight)
+        populateBoard()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -76,24 +77,16 @@ class NPGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 }
 
-extension NPGameViewController: NPDelegate {
-    
-    func setProperties(for item: UIButton, andTag tagID: Int) {
-        item.addTarget(self, action: #selector(onPuzzlePiece), for: .touchUpInside)
-        item.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
-        item.titleLabel?.font = UIFont.systemFont(ofSize: 30)
-        item.backgroundColor = UIColor.white
-        item.tag = tagID
-        item.layer.borderWidth = 1
-        item.layer.borderColor = UIColor.black.cgColor
-    }
+extension NPGameViewController: GridGameDelegate {
     
     func performMove(from piece1: UIButton, to piece2: UIButton) {
         piece2.setTitle(piece1.currentTitle, for: UIControlState())
         piece1.setTitle("", for: UIControlState())
     }
     
-    @objc func onPuzzlePiece(_ sender: UIButton) {
+    func actionOnSender(_ sender: AnyObject) {
+        
+        let sender = sender as! UIButton
         
         let slotTag = sender.tag
         var changed = false
@@ -179,31 +172,32 @@ extension NPGameViewController: NPDelegate {
     }
 }
 
-extension NPGameViewController: NPDataSource {
+extension NPGameViewController: GridGameDataSource {
     
-    func constructObjectRect(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, storeIn arrayOfObjs: inout [UIButton], withTag tag: inout Int) {
+    func createCell(at x: CGFloat, y: CGFloat, ofSize size: CGFloat, to view: UIView) {
+        let cell = UIButton(frame: CGRect(x: x, y: y, width: size, height: size))
         
-        let obj = UIButton(frame: CGRect(x: x, y: y, width: width, height: height))
-        setProperties(for: obj, andTag: tag)
-        arrayOfObjs.append(obj)
-        tag += 1
+        cell.addTarget(self, action: #selector(actionOnSender), for: .touchUpInside)
+        cell.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
+        cell.titleLabel?.font = UIFont.systemFont(ofSize: 30)
+        cell.backgroundColor = UIColor.white
+        cell.layer.borderWidth = 1
+        cell.layer.borderColor = UIColor.black.cgColor
+        cell.tag = cellTag
+        view.addSubview(cell)
+        container.append(cell)
+        
+        cellTag += 1
     }
     
-    func constructTheGrid(gridSize: CGFloat, bound: Int, originX: inout CGFloat, originY: inout CGFloat, pWidth: inout CGFloat, pHeight: inout CGFloat) {
-        for _ in 0 ..< Int(gridSize) {
-            for _ in 0 ..< Int(gridSize) {
-                constructObjectRect(x: originX, y: originY, width: pWidth, height: pHeight, storeIn: &container, withTag: &tagCount)
-                
-                originX += pWidth
+    func populateBoard() {
+        for _ in 0..<Int(gridSize) {
+            for _ in 0..<Int(gridSize) {
+                createCell(at: startX, y: startY, ofSize: cellSize, to: self.view)
+                startX = startX + cellSize
             }
-            
-            originX -= (pWidth * gridSize)
-            originY += pHeight
-        }
-        
-        //add grid components to the view
-        for item in container {
-            self.view.addSubview(item)
+            startX = startX - (cellSize * CGFloat(gridSize))
+            startY = startY + cellSize
         }
         
         //populate the grid objects

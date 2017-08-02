@@ -1,5 +1,5 @@
 //
-//  TTTDelegate.swift
+//  GridGameDelegate.swift
 //  SimpleGamesCollection
 //
 //  Created by apple on 02/08/2017.
@@ -9,6 +9,6 @@
 import Foundation
 import UIKit
 
-protocol TTTDelegate {
-    func setProperties(for item: UIButton, andTag tagID: Int)
+protocol GridGameDelegate {
+    func actionOnSender(_ sender: AnyObject)
 }

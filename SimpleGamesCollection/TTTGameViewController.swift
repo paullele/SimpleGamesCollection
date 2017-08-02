@@ -12,28 +12,26 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var displayGameStatus: UILabel!
     
-    private var drawingBoard: UIView!
-    
-    private let gridSize: CGFloat = 3
-    private var container = [UIButton]()
-    private let gameEngine = TTTGameEngine()
-    
+    let gridSize: CGFloat = 3
     private var signaturesInit: TTTSignatures!
     private var gameEnded = false
+    var cellSize: CGFloat!
     
-    private var k = 0
-    private var tagCount = 0
+    let gameEngine = TTTGameEngine()
     
-    private var pWidth: CGFloat!
-    private var pHeight: CGFloat!
-        
-    private var computerSignature: String {
+    var k = 0
+    var drawingBoard: UIView!
+    var container = [UIButton]()
+    var startX: CGFloat!
+    var startY: CGFloat!
+    
+    var computerSignature: String {
         get {
             return signaturesInit.getComputerSig
         }
     }
     
-    private var playerSignature: String {
+    var playerSignature: String {
         get {
             return signaturesInit.getPlayerSig
         }
@@ -67,33 +65,13 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    @objc fileprivate func onField(_ sender: UIButton) {
-        
-        if sender.currentTitle != playerSignature && sender.currentTitle != computerSignature {
-            
-            sender.setTitle(playerSignature, for: UIControlState())
-            k += 1
-            
-            if !searchWinner(k) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
-                    self.gameEngine.searchPosition(self.container, self.computerSignature, self.playerSignature)
-                    
-                    self.k += 1
-                    
-                    _ = self.searchWinner(self.k)
-                    
-                })
-            }
-        }
-    }
-    
     private func disableButtons() {
         for item in container {
             item.isUserInteractionEnabled = false
         }
     }
     
-    private func searchWinner(_ k: Int) -> Bool {
+    func searchWinner(_ k: Int) -> Bool {
         
         if k > 4 {
             if gameEngine.existsWinner(container, playerSignature) {
@@ -141,15 +119,14 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
-        pWidth = CGFloat((Int(self.view.frame.width) - (Int(self.view.frame.width) % 100))/Int(gridSize))
-        pHeight = pWidth
+        cellSize = CGFloat((Int(self.view.frame.width) - (Int(self.view.frame.width) % 100))/Int(gridSize))
                 
         //set the grid origins
-        var originX = ((self.view.frame.width/2 - ((pWidth * gridSize) / 2)))
-        var originY = ((self.view.frame.height/2 - ((pHeight * gridSize) / 2)))
+        startX = ((self.view.frame.width/2 - ((cellSize * gridSize) / 2)))
+        startY = ((self.view.frame.height/2 - ((cellSize * gridSize) / 2)))
         
         //construct the grid interactive cells
-        constructTheGrid(gridSize: gridSize, originX: &originX, originY: &originY, pWidth: pWidth, pHeight: pHeight, arrayOfObjs: &container, tagCount: &tagCount)
+        populateBoard()
         
         if computerGoesFirst! {
             signaturesInit = TTTSignatures(playerSignature: "0", computerSignature: "X")
@@ -170,42 +147,52 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 }
 
-extension TTTGameViewController: TTTDelegate {
+extension TTTGameViewController: GridGameDelegate {
     
-    func setProperties(for item: UIButton, andTag tagID: Int) {
-        item.addTarget(self, action: #selector(onField), for: .touchUpInside)
-        item.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
-        item.titleLabel?.font = UIFont.systemFont(ofSize: 40)
-        item.tag = tagID
-        item.layer.borderColor = UIColor.black.cgColor
+    func actionOnSender(_ sender: AnyObject) {
+        let sender = sender as! UIButton
+        if sender.currentTitle != playerSignature && sender.currentTitle != computerSignature {
+            
+            sender.setTitle(playerSignature, for: UIControlState())
+            k += 1
+            
+            if !searchWinner(k) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+                    self.gameEngine.searchPosition(self.container, self.computerSignature, self.playerSignature)
+                    
+                    self.k += 1
+                    
+                    _ = self.searchWinner(self.k)
+                    
+                })
+            }
+        }
     }
 }
 
-extension TTTGameViewController: TTTDataSource {
+extension TTTGameViewController: GridGameDataSource {
     
-    func constructObjectRect(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, storeIn arrayOfObjs: inout [UIButton], withTag tag: inout Int) {
+    func createCell(at x: CGFloat, y: CGFloat, ofSize size: CGFloat, to view: UIView) {
         
-        let obj = UIButton(frame: CGRect(x: x, y: y, width: width, height: height))
-        setProperties(for: obj, andTag: tag)
-        arrayOfObjs.append(obj)
+        let cell = UIButton(frame: CGRect(x: x, y: y, width: size, height: size))
+        cell.addTarget(self, action: #selector(actionOnSender), for: .touchUpInside)
+        cell.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
+        cell.titleLabel?.font = UIFont.systemFont(ofSize: 40)
+        cell.layer.borderColor = UIColor.black.cgColor
+        container.append(cell)
+        view.addSubview(cell)
     }
     
-    func constructTheGrid(gridSize: CGFloat, originX: inout CGFloat, originY: inout CGFloat, pWidth: CGFloat, pHeight: CGFloat, arrayOfObjs: inout [UIButton], tagCount: inout Int) {
+    func populateBoard() {
         
         for _ in 0 ..< Int(gridSize) {
             for _ in 0 ..< Int(gridSize) {
-                constructObjectRect(x: originX, y: originY, width: pWidth, height: pHeight, storeIn: &arrayOfObjs, withTag: &tagCount)
-                
-                originX += pWidth
+                createCell(at: startX, y: startY, ofSize: cellSize, to: self.drawingBoard)
+                startX = startX + cellSize
             }
             
-            originX -= (pWidth * gridSize)
-            originY += pHeight
-        }
-        
-        //add grid components to the view
-        for item in arrayOfObjs {
-            self.view.addSubview(item)
+            startX = startX - (cellSize * gridSize)
+            startY = startY + cellSize
         }
     }
 }

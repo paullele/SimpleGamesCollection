@@ -24,7 +24,6 @@ class MSGameViewController: UIViewController, UIGestureRecognizerDelegate {
 
     @IBOutlet weak var displayGameStatus: UILabel!
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -40,9 +39,8 @@ class MSGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         measurementsInitializer(startX: self.view.frame.width/2 - mRef, startY: self.view.frame.height/2 - mRef, cellSize: mRef*2/CGFloat(cellsPerRow), cellsPerRow: cellsPerRow)
         
-        populateBoard(view: self.view)
+        populateBoard()
         plantMines()
-        addTargetEvents()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -83,34 +81,34 @@ class MSGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 }
 
-extension MSGameViewController: MSDataSource {
-    
-    func measurementsInitializer(startX: CGFloat, startY: CGFloat, cellSize: CGFloat, cellsPerRow: Int) {
-        self.startX = startX
-        self.startY = startY
-        self.cellSize = cellSize
-        self.cellsPerRow = cellsPerRow
-    }
+extension MSGameViewController: GridGameDataSource {
     
     func createCell(at x: CGFloat, y: CGFloat, ofSize size: CGFloat, to view: UIView ) {
         let cell = MSCell(frame: CGRect(x: x, y: y, width: size, height: size), visited: false)
         cell.layer.borderWidth = 1
         cell.titleLabel?.font = UIFont.systemFont(ofSize: cellSize)
         cell.setTitleColor(.blue, for: .normal)
+        cell.addTarget(self, action: #selector(actionOnSender), for: .touchUpInside)
         gameEngine.computedCells = (cell, nil)
-        //cells.append(cell)
         view.addSubview(cell)
     }
     
-    func populateBoard(view: UIView) {
+    func populateBoard() {
         for _ in 0..<cellsPerRow {
             for _ in 0..<cellsPerRow {
-                createCell(at: startX, y: startY, ofSize: cellSize, to: view)
+                createCell(at: startX, y: startY, ofSize: cellSize, to: self.view)
                 startX = startX + cellSize
             }
             startX = startX - (cellSize * CGFloat(cellsPerRow))
             startY = startY + cellSize
         }
+    }
+    
+    func measurementsInitializer(startX: CGFloat, startY: CGFloat, cellSize: CGFloat, cellsPerRow: Int) {
+        self.startX = startX
+        self.startY = startY
+        self.cellSize = cellSize
+        self.cellsPerRow = cellsPerRow
     }
     
     func plantMines() {
@@ -138,15 +136,10 @@ extension MSGameViewController: MSDataSource {
     }
 }
 
-extension MSGameViewController: MSDelegate {
+extension MSGameViewController: GridGameDelegate {
     
-    func addTargetEvents() {
-        for cell in gameEngine.computedCells.cells! {
-            cell.addTarget(self, action: #selector(actionOnCell), for: .touchUpInside)
-        }
-    }
-    
-    func actionOnCell(sender: MSCell) {
+    func actionOnSender(_ sender: AnyObject) {
+        let sender = sender as! MSCell
         sender.isSelected = true
         if(sender.titleLabel?.text != "M") {
             //check neighbours
