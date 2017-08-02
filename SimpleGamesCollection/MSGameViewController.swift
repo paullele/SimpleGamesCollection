@@ -29,8 +29,7 @@ class MSGameViewController: UIViewController, UIGestureRecognizerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
-        self.navigationItem.leftBarButtonItem = backButton
+        self.navigationController?.isNavigationBarHidden = true
         
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
@@ -44,7 +43,11 @@ class MSGameViewController: UIViewController, UIGestureRecognizerDelegate {
         populateBoard(view: self.view)
         plantMines()
         addTargetEvents()
-        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {

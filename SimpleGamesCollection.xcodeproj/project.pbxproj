@@ -26,6 +26,8 @@
 		18AE05D51F21FDEF00E50ED2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18AE05D31F21FDEF00E50ED2 /* Main.storyboard */; };
 		18AE05D71F21FDEF00E50ED2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18AE05D61F21FDEF00E50ED2 /* Assets.xcassets */; };
 		18AE05DA1F21FDEF00E50ED2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18AE05D81F21FDEF00E50ED2 /* LaunchScreen.storyboard */; };
+		18B8FBC11F31C39600BCD189 /* TTTDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B8FBC01F31C39600BCD189 /* TTTDelegate.swift */; };
+		18B8FBC31F31C49100BCD189 /* TTTDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B8FBC21F31C49100BCD189 /* TTTDataSource.swift */; };
 		18C847351F2733B500142CD1 /* guesswords.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18C847321F2733B500142CD1 /* guesswords.plist */; };
 		18C847361F2733B500142CD1 /* HDrawingBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C847331F2733B500142CD1 /* HDrawingBoard.swift */; };
 		18C847371F2733B500142CD1 /* HGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C847341F2733B500142CD1 /* HGameViewController.swift */; };
@@ -61,6 +63,8 @@
 		18AE05D61F21FDEF00E50ED2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		18AE05D91F21FDEF00E50ED2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		18AE05DB1F21FDEF00E50ED2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		18B8FBC01F31C39600BCD189 /* TTTDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTTDelegate.swift; sourceTree = "<group>"; };
+		18B8FBC21F31C49100BCD189 /* TTTDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTTDataSource.swift; sourceTree = "<group>"; };
 		18C847321F2733B500142CD1 /* guesswords.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = guesswords.plist; sourceTree = "<group>"; };
 		18C847331F2733B500142CD1 /* HDrawingBoard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HDrawingBoard.swift; sourceTree = "<group>"; };
 		18C847341F2733B500142CD1 /* HGameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HGameViewController.swift; sourceTree = "<group>"; };
@@ -186,6 +190,8 @@
 		18FC33A51F222B4F0015D82C /* TicTacToe */ = {
 			isa = PBXGroup;
 			children = (
+				18B8FBC01F31C39600BCD189 /* TTTDelegate.swift */,
+				18B8FBC21F31C49100BCD189 /* TTTDataSource.swift */,
 				18FC33A61F2231800015D82C /* TTTSignatures.swift */,
 				18FC33AC1F2231A50015D82C /* TTTDrawingBoard.swift */,
 				18FC33AD1F2231A50015D82C /* TTTGameEngine.swift */,
@@ -286,9 +292,11 @@
 				1815FF861F26842D006D61FA /* TOGameEngine.swift in Sources */,
 				189137171F2622DC004B9AB7 /* NPGameViewController.swift in Sources */,
 				18C847371F2733B500142CD1 /* HGameViewController.swift in Sources */,
+				18B8FBC31F31C49100BCD189 /* TTTDataSource.swift in Sources */,
 				1815FF871F26842D006D61FA /* TOGameViewController.swift in Sources */,
 				189137181F2622DC004B9AB7 /* NPMenuViewController.swift in Sources */,
 				18FC33AA1F2231990015D82C /* TTTMenuViewController.swift in Sources */,
+				18B8FBC11F31C39600BCD189 /* TTTDelegate.swift in Sources */,
 				18AE05D01F21FDEF00E50ED2 /* AppDelegate.swift in Sources */,
 				1822AAAB1F23813A00537695 /* MSMenuViewController.swift in Sources */,
 				189BB6801F24C5D50053839C /* MSDelegate.swift in Sources */,

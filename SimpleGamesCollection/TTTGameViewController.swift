@@ -67,7 +67,7 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    @IBAction private func onField(_ sender: UIButton) {
+    @objc fileprivate func onField(_ sender: UIButton) {
         
         if sender.currentTitle != playerSignature && sender.currentTitle != computerSignature {
             
@@ -119,21 +119,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         return false
     }
     
-    private func constructObjectRect(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, storeIn arrayOfObjs: inout [UIButton], withTag tag: inout Int) {
-        
-        let obj = UIButton(frame: CGRect(x: x, y: y, width: width, height: height))
-        setProperties(for: obj, andTag: tag)
-        arrayOfObjs.append(obj)
-    }
-    
-    private func setProperties(for item: UIButton, andTag tagID: Int) {
-        item.addTarget(self, action: #selector(onField), for: .touchUpInside)
-        item.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
-        item.titleLabel?.font = UIFont.systemFont(ofSize: 40)
-        item.tag = tagID
-        item.layer.borderColor = UIColor.black.cgColor
-    }
-    
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if (navigationController?.viewControllers.count)! > 1 {
             handleUnwindToMenu()
@@ -150,11 +135,11 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         self.view.addSubview(drawingBoard);
         
+        self.drawingBoard.addSubview(displayGameStatus)
+        
+        self.navigationController?.isNavigationBarHidden = true
+        
         navigationController?.interactivePopGestureRecognizer?.delegate = self
-        
-        let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
-        
-        self.navigationItem.leftBarButtonItem = backButton
         
         pWidth = CGFloat((Int(self.view.frame.width) - (Int(self.view.frame.width) % 100))/Int(gridSize))
         pHeight = pWidth
@@ -164,21 +149,7 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         var originY = ((self.view.frame.height/2 - ((pHeight * gridSize) / 2)))
         
         //construct the grid interactive cells
-        for _ in 0 ..< Int(gridSize) {
-            for _ in 0 ..< Int(gridSize) {
-                constructObjectRect(x: originX, y: originY, width: pWidth, height: pHeight, storeIn: &container, withTag: &tagCount)
-                
-                originX += pWidth
-            }
-            
-            originX -= (pWidth * gridSize)
-            originY += pHeight
-        }
-        
-        //add grid components to the view
-        for item in container {
-            self.view.addSubview(item)
-        }
+        constructTheGrid(gridSize: gridSize, originX: &originX, originY: &originY, pWidth: pWidth, pHeight: pHeight, arrayOfObjs: &container, tagCount: &tagCount)
         
         if computerGoesFirst! {
             signaturesInit = TTTSignatures(playerSignature: "0", computerSignature: "X")
@@ -190,6 +161,51 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
         else {
             signaturesInit = TTTSignatures(playerSignature: "X", computerSignature: "0")
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false
+    }
+}
+
+extension TTTGameViewController: TTTDelegate {
+    
+    func setProperties(for item: UIButton, andTag tagID: Int) {
+        item.addTarget(self, action: #selector(onField), for: .touchUpInside)
+        item.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
+        item.titleLabel?.font = UIFont.systemFont(ofSize: 40)
+        item.tag = tagID
+        item.layer.borderColor = UIColor.black.cgColor
+    }
+}
+
+extension TTTGameViewController: TTTDataSource {
+    
+    func constructObjectRect(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, storeIn arrayOfObjs: inout [UIButton], withTag tag: inout Int) {
+        
+        let obj = UIButton(frame: CGRect(x: x, y: y, width: width, height: height))
+        setProperties(for: obj, andTag: tag)
+        arrayOfObjs.append(obj)
+    }
+    
+    func constructTheGrid(gridSize: CGFloat, originX: inout CGFloat, originY: inout CGFloat, pWidth: CGFloat, pHeight: CGFloat, arrayOfObjs: inout [UIButton], tagCount: inout Int) {
+        
+        for _ in 0 ..< Int(gridSize) {
+            for _ in 0 ..< Int(gridSize) {
+                constructObjectRect(x: originX, y: originY, width: pWidth, height: pHeight, storeIn: &arrayOfObjs, withTag: &tagCount)
+                
+                originX += pWidth
+            }
+            
+            originX -= (pWidth * gridSize)
+            originY += pHeight
+        }
+        
+        //add grid components to the view
+        for item in arrayOfObjs {
+            self.view.addSubview(item)
         }
     }
 }

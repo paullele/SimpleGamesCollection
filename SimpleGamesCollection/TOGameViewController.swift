@@ -32,9 +32,7 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
-        let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
-        
-        self.navigationItem.leftBarButtonItem = backButton
+        self.navigationController?.isNavigationBarHidden = true
         
         managePlayersButtons()
         
@@ -43,6 +41,11 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
                 self.computerTakesSticks()
             })
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false
     }
     
     func updateSticksLeft(with number: Int) {

@@ -29,22 +29,16 @@ class NPMenuViewController: UIViewController {
             if let gameViewControler = segue.destination as? NPGameViewController {
                 gameViewControler.gridSize = 3
                 gameViewControler.bound = 8
-                gameViewControler.pWidth = 100
-                gameViewControler.pHeight = 100
             }
         } else if segue.identifier == "Medium" {
             if let gameViewControler = segue.destination as? NPGameViewController {
                 gameViewControler.gridSize = 4
                 gameViewControler.bound = 15
-                gameViewControler.pWidth = 90
-                gameViewControler.pHeight = 90
             }
         } else if segue.identifier == "Hard" {
             if let gameViewControler = segue.destination as? NPGameViewController {
                 gameViewControler.gridSize = 5
                 gameViewControler.bound = 24
-                gameViewControler.pWidth = 75
-                gameViewControler.pHeight = 75
             }
         }
     }

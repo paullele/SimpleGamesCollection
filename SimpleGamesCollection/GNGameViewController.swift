@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GNGameViewController: UIViewController {
+class GNGameViewController: UIViewController, UIGestureRecognizerDelegate {
     
     var range: Int?
     var tips: Bool?
@@ -37,16 +37,30 @@ class GNGameViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
-        self.navigationItem.leftBarButtonItem = backButton
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+        
+        self.navigationController?.isNavigationBarHidden = true
         
         gameStatus.text = "Your guess is..."
         secretNumber = gameLogic.generateNumber(upTo: range!)
         attemptsStatus.text = String(attempts!)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
+    }
+    
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if (navigationController?.viewControllers.count)! > 1 {
+            handleUnwindToMenu()
+        }
+        
+        return false
     }
 
     private func manageEndGame() {

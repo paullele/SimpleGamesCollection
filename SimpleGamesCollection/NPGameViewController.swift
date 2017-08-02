@@ -24,10 +24,12 @@ class NPGameViewController: UIViewController, UIGestureRecognizerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        pWidth = CGFloat(Int(self.view.frame.width)/Int(gridSize)) - 10
+        pHeight = pWidth
+        
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
-        let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
-        self.navigationItem.leftBarButtonItem = backButton
+        self.navigationController?.isNavigationBarHidden = true
         
         //generate the puzzle
         
@@ -39,6 +41,11 @@ class NPGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         //construct the grid
         constructTheGrid(gridSize: gridSize, bound: bound, originX: &originX, originY: &originY, pWidth: &pWidth, pHeight: &pHeight)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = false
     }
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -74,7 +81,7 @@ extension NPGameViewController: NPDelegate {
     func setProperties(for item: UIButton, andTag tagID: Int) {
         item.addTarget(self, action: #selector(onPuzzlePiece), for: .touchUpInside)
         item.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
-        item.titleLabel?.font = UIFont.systemFont(ofSize: 40)
+        item.titleLabel?.font = UIFont.systemFont(ofSize: 30)
         item.backgroundColor = UIColor.white
         item.tag = tagID
         item.layer.borderWidth = 1
@@ -182,7 +189,7 @@ extension NPGameViewController: NPDataSource {
         tag += 1
     }
     
-    internal func constructTheGrid(gridSize: CGFloat, bound: Int, originX: inout CGFloat, originY: inout CGFloat, pWidth: inout CGFloat, pHeight: inout CGFloat) {
+    func constructTheGrid(gridSize: CGFloat, bound: Int, originX: inout CGFloat, originY: inout CGFloat, pWidth: inout CGFloat, pHeight: inout CGFloat) {
         for _ in 0 ..< Int(gridSize) {
             for _ in 0 ..< Int(gridSize) {
                 constructObjectRect(x: originX, y: originY, width: pWidth, height: pHeight, storeIn: &container, withTag: &tagCount)
