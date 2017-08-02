@@ -28,7 +28,7 @@ class TTTGameEngine {
                 var counter = 0
                 
                 //can go down and search elementsPerRow - 1 references
-                while(localPosition + elementsPerRow < gridSize - 1) {
+                while(localPosition + elementsPerRow < gridSize) {
                     localPosition = localPosition + elementsPerRow
                     if(fields[localPosition].currentTitle == reference) {
                         counter += 1
@@ -45,7 +45,7 @@ class TTTGameEngine {
                 localPosition = position
                 
                 //can go up
-                while(localPosition - elementsPerRow > 0) {
+                while(localPosition - elementsPerRow >= 0) {
                     localPosition = localPosition - elementsPerRow
                     if(fields[localPosition].currentTitle == reference) {
                         counter += 1
@@ -64,7 +64,7 @@ class TTTGameEngine {
                 counter = 0
                 
                 //can go left
-                while(localPosition - 1 > 0 && localPosition % elementsPerRow != 0) {
+                while(localPosition - 1 >= 0 && localPosition % elementsPerRow != 0) {
                     localPosition = localPosition - 1
                     if(fields[localPosition].currentTitle == reference) {
                         counter += 1
@@ -80,7 +80,7 @@ class TTTGameEngine {
                 localPosition = position
                 
                 //can go right
-                while(localPosition + 1 < (gridSize - 1) && (localPosition + 1) % elementsPerRow != 0) {
+                while(localPosition + 1 < gridSize && (localPosition + 1) % elementsPerRow != 0) {
                     localPosition = localPosition + 1
                     if(fields[localPosition].currentTitle == reference) {
                         counter += 1
@@ -99,7 +99,7 @@ class TTTGameEngine {
                 counter = 0
                 
                 //can go down main diagonal
-                while(localPosition + (elementsPerRow + 1) < gridSize - 1 && (localPosition + 1) % elementsPerRow != 0) {
+                while(localPosition + (elementsPerRow + 1) < gridSize && (localPosition + 1) % elementsPerRow != 0) {
                     localPosition = localPosition + (elementsPerRow + 1)
                     if(fields[localPosition].currentTitle == reference) {
                         counter += 1
@@ -115,7 +115,7 @@ class TTTGameEngine {
                 localPosition = position
                 
                 //can go up main diagonal
-                while(localPosition - (elementsPerRow + 1) > 0 && localPosition % elementsPerRow != 0) {
+                while(localPosition - (elementsPerRow + 1) >= 0 && localPosition % elementsPerRow != 0) {
                     localPosition = localPosition - (elementsPerRow + 1)
                     if(fields[localPosition].currentTitle == reference) {
                         counter += 1
@@ -134,7 +134,7 @@ class TTTGameEngine {
                 counter = 0
                 
                 //can go down secondary diagonal
-                while(localPosition + (elementsPerRow - 1) < (gridSize - 1) - (elementsPerRow - 1) && localPosition % elementsPerRow != 0) {
+                while(localPosition + (elementsPerRow - 1) <= (gridSize - elementsPerRow) && localPosition % elementsPerRow != 0) {
                     localPosition = localPosition + (elementsPerRow - 1)
                     if(fields[localPosition].currentTitle == reference) {
                         counter += 1
@@ -150,7 +150,7 @@ class TTTGameEngine {
                 localPosition = position
                 
                 //can go up secondary diagonal
-                while(localPosition - (elementsPerRow - 1) > elementsPerRow - 1 && (localPosition + 1) % elementsPerRow != 0) {
+                while(localPosition - (elementsPerRow - 1) >= elementsPerRow - 1 && (localPosition + 1) % elementsPerRow != 0) {
                     localPosition = localPosition - (elementsPerRow - 1)
                     if(fields[localPosition].currentTitle == reference) {
                         counter += 1
