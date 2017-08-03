@@ -97,41 +97,30 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="200" translatesAutoresizingMaskIntoConstraints="NO" id="tsz-xC-suc">
-                                <rect key="frame" x="87" y="70" width="200" height="250.5"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="qyz-Ji-ehZ">
+                                <rect key="frame" x="145" y="296" width="84" height="75"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Would you like to go first?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nGs-Jn-8EH">
-                                        <rect key="frame" x="2" y="0.0" width="196.5" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="140" translatesAutoresizingMaskIntoConstraints="NO" id="jvb-g2-j7P">
-                                        <rect key="frame" x="0.0" y="220.5" width="200" height="30"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="61Y-y0-0tu">
-                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
-                                                <state key="normal" title="Yes"/>
-                                                <connections>
-                                                    <segue destination="zrA-wn-1ak" kind="show" identifier="playerFirst" id="xcX-tW-D7F"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ovx-bm-4Ke">
-                                                <rect key="frame" x="170" y="0.0" width="30" height="30"/>
-                                                <state key="normal" title="No"/>
-                                                <connections>
-                                                    <segue destination="zrA-wn-1ak" kind="show" identifier="computerFirst" id="YoD-P7-jiL"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QGc-oJ-nwu">
+                                        <rect key="frame" x="0.0" y="0.0" width="84" height="30"/>
+                                        <state key="normal" title="Singleplayer"/>
+                                        <connections>
+                                            <action selector="singlePlayer:" destination="KLF-Xn-ajN" eventType="touchUpInside" id="Vfk-JN-d86"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lLa-W1-fH0">
+                                        <rect key="frame" x="0.0" y="45" width="84" height="30"/>
+                                        <state key="normal" title="Multiplayer"/>
+                                        <connections>
+                                            <action selector="multiPlayer:" destination="KLF-Xn-ajN" eventType="touchUpInside" id="7XL-Tf-RL1"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="tsz-xC-suc" firstAttribute="top" secondItem="SQ0-y1-dfD" secondAttribute="bottom" constant="50" id="6KI-tJ-TYI"/>
-                            <constraint firstItem="tsz-xC-suc" firstAttribute="centerX" secondItem="ky4-61-dgV" secondAttribute="centerX" id="pjg-Ka-Jsd"/>
+                            <constraint firstItem="qyz-Ji-ehZ" firstAttribute="centerY" secondItem="ky4-61-dgV" secondAttribute="centerY" id="imV-o6-0r2"/>
+                            <constraint firstItem="qyz-Ji-ehZ" firstAttribute="centerX" secondItem="ky4-61-dgV" secondAttribute="centerX" id="mCF-3B-08i"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Tic Tac Toe Menu" id="a4i-os-2wT"/>
@@ -693,7 +682,7 @@
         <!--Game View Controller-->
         <scene sceneID="fPN-lE-6O8">
             <objects>
-                <viewController id="zrA-wn-1ak" customClass="TTTGameViewController" customModule="SimpleGamesCollection" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TTTGameViewController" id="zrA-wn-1ak" customClass="TTTGameViewController" customModule="SimpleGamesCollection" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="dBR-E8-ERs"/>
                         <viewControllerLayoutGuide type="bottom" id="Uxt-WC-4vF"/>
@@ -701,23 +690,9 @@
                     <view key="view" contentMode="scaleToFill" id="UtF-iP-06g" customClass="TTTDrawingBoard" customModule="SimpleGamesCollection" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dO8-iC-B71">
-                                <rect key="frame" x="0.0" y="40" width="375" height="0.0"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="dO8-iC-B71" firstAttribute="top" secondItem="dBR-E8-ERs" secondAttribute="bottom" constant="20" id="NXA-8J-Ch4"/>
-                            <constraint firstAttribute="trailing" secondItem="dO8-iC-B71" secondAttribute="trailing" id="Rrr-KR-Na0"/>
-                            <constraint firstItem="dO8-iC-B71" firstAttribute="leading" secondItem="UtF-iP-06g" secondAttribute="leading" id="oFG-kM-rWh"/>
-                        </constraints>
                     </view>
                     <connections>
-                        <outlet property="displayGameStatus" destination="dO8-iC-B71" id="Vd7-iJ-Fei"/>
                         <segue destination="Pge-No-gPG" kind="unwind" identifier="unwindToTTTMenu" unwindAction="unwindToTTTMenuWithSegue:" id="yKX-Xx-fhH"/>
                     </connections>
                 </viewController>
@@ -744,8 +719,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="b5R-5r-Qe9"/>
         <segue reference="rpb-fR-egs"/>
-        <segue reference="xcX-tW-D7F"/>
+        <segue reference="b5R-5r-Qe9"/>
     </inferredMetricsTieBreakers>
 </document>

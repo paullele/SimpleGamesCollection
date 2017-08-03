@@ -7,23 +7,28 @@
 //
 
 import UIKit
+import MultipeerConnectivity
 
 class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
-    
-    @IBOutlet weak var displayGameStatus: UILabel!
-    
+        
     let gridSize: CGFloat = 3
     private var signaturesInit: TTTSignatures!
-    private var gameEnded = false
+    var gameEnded = false
     var cellSize: CGFloat!
     
     let gameEngine = TTTGameEngine()
     
-    var k = 0
+    var k: Int = 0
+    var cellTag = 0
     var drawingBoard: UIView!
     var container = [UIButton]()
     var startX: CGFloat!
     var startY: CGFloat!
+    var singlePlayer: Bool = true
+    
+    var currentPlayer: String = "X"
+    var connected = false
+    var appDelegate: AppDelegate!
     
     var computerSignature: String {
         get {
@@ -65,33 +70,21 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    private func disableButtons() {
-        for item in container {
-            item.isUserInteractionEnabled = false
-        }
-    }
-    
-    func searchWinner(_ k: Int) -> Bool {
+    func searchWinner(withSignature signature: String, andName name: String) -> Bool {
+        
+        k += 1
         
         if k > 4 {
-            if gameEngine.existsWinner(container, playerSignature) {
-                disableButtons()
-                displayGameStatus.text = "Player won"
+            if gameEngine.existsWinner(container, signature) {
                 gameEnded = true
+                handleEndGameWith(message: "\(name) won")
                 return true
             }
-            else if gameEngine.existsWinner(container, computerSignature) {
-                disableButtons()
-                displayGameStatus.text = "Computer won"
-                gameEnded = true
-                return true
-            }
-            else if k == 9 {
-                disableButtons()
-                displayGameStatus.text = "Tie"
-                gameEnded = true
-                return true
-            }
+        }
+        
+        if k == 9 && !gameEnded {
+            gameEnded = true
+            handleEndGameWith(message: "Tie")
         }
         
         return false
@@ -101,22 +94,19 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         if (navigationController?.viewControllers.count)! > 1 {
             handleUnwindToMenu()
         }
-        
         return false
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //game setup
+        
         drawingBoard = TTTDrawingBoard(frame: self.view.frame)
         drawingBoard.backgroundColor = UIColor.white
         
         self.view.addSubview(drawingBoard);
-        
-        self.drawingBoard.addSubview(displayGameStatus)
-        
-        self.navigationController?.isNavigationBarHidden = true
-        
+    
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
         cellSize = CGFloat((Int(self.view.frame.width) - (Int(self.view.frame.width) % 100))/Int(gridSize))
@@ -128,43 +118,223 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         //construct the grid interactive cells
         populateBoard()
         
-        if computerGoesFirst! {
-            signaturesInit = TTTSignatures(playerSignature: "0", computerSignature: "X")
+        //if single player
+        
+        if singlePlayer {
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
-                self.gameEngine.searchPosition(self.container, self.computerSignature, self.playerSignature)
-                self.k += 1
-            })
-        }
-        else {
-            signaturesInit = TTTSignatures(playerSignature: "X", computerSignature: "0")
+            let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
+            navigationItem.leftBarButtonItem = backButton
+            
+            if computerGoesFirst! {
+                signaturesInit = TTTSignatures(playerSignature: "0", computerSignature: "X")
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+                    self.gameEngine.searchPosition(self.container, self.computerSignature, self.playerSignature)
+                    self.k += 1
+                })
+            }
+            else {
+                signaturesInit = TTTSignatures(playerSignature: "X", computerSignature: "0")
+            }
+        } else {
+            
+            //MPC Setup
+            
+            let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleNewGame))
+            navigationItem.leftBarButtonItem = backButton
+            
+            let connectButton = UIBarButtonItem(title: "Connect", style: .plain, target: self, action: #selector(connectWithPeer))
+            navigationItem.rightBarButtonItem = connectButton
+            
+            appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.mpcHandler.setupPeerWithDisplay(name: UIDevice.current.name)
+            appDelegate.mpcHandler.setuptSession()
+            appDelegate.mpcHandler.advertiseSelf(advertise: true)
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(peerChangedStateWith), name: Notification.Name("MPC_DidChangeStateNotification"), object: nil)
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(handleReceivedDataWith), name: Notification.Name("MPC_DidReceiveDataNotification"), object: nil)
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.isNavigationBarHidden = false
+    func peerChangedStateWith(notification: Notification) {
+        let userInfo = NSDictionary(dictionary: notification.userInfo!)
+        let state = userInfo.object(forKey: "state") as! Int
+        
+        if state == MCSessionState.connected.rawValue {
+            self.navigationItem.title = "Connected"
+            resetField()
+            connected = true
+        } else if state == MCSessionState.notConnected.rawValue {
+            self.navigationItem.title = "Not Connected"
+            connected = false
+        }
+    }
+    
+    func handleReceivedDataWith(notification: Notification) {
+        
+        let userInfo = notification.userInfo!
+        let receiveData: Data = userInfo["data"] as! Data
+        
+        let message: [String : Any] = try! JSONSerialization.jsonObject(with: receiveData, options: JSONSerialization.ReadingOptions.allowFragments) as! [String : Any]
+        
+        let senderPeerID = userInfo["peerID"] as! MCPeerID
+        let senderDisplayName = senderPeerID.displayName
+        
+        if message["newGame"] as? String == "New Game" {
+            let alert = UIAlertController(title: "Tic Tac Toe", message: "\(senderDisplayName) wants to start a new game", preferredStyle: .actionSheet)
+            
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: {
+                action in self.resetField()
+            })
+            
+            let noAction = UIAlertAction(title: "Nope", style: .default, handler: {
+                action in
+
+                self.appDelegate.mpcHandler.session.disconnect()
+                self.appDelegate.mpcHandler.advertiseSelf(advertise: false)
+                self.handleUnwindToMenu()
+            })
+            
+            alert.addAction(okAction)
+            alert.addAction(noAction)
+            
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            
+            let cell: Int? = message["cell"] as? Int
+            let player: String? = message["player"] as? String
+            
+            if cell != nil && player != nil {
+                container[cell!].setTitle(player!, for: .normal)
+                container[cell!].isUserInteractionEnabled = false
+                
+                if !searchWinner(withSignature: "X", andName: "X") {
+                    _ = searchWinner(withSignature: "0", andName: "0")
+                }
+                
+                if player == "X" {
+                    currentPlayer = "0"
+                } else {
+                    currentPlayer = "X"
+                }
+            }
+        }
+    }
+    
+    func connectWithPeer() {
+        if appDelegate.mpcHandler.session != nil {
+            appDelegate.mpcHandler.setupBroser()
+            appDelegate.mpcHandler.browser.delegate = self
+            self.present(appDelegate.mpcHandler.browser, animated: true, completion: nil)
+        }
+    }
+    
+    func handleEndGameWith(message: String) {
+        gameEnded = true
+        
+        let alert = UIAlertController(title: "Tic Tac Toe", message: message, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
+            action in
+            
+            if self.singlePlayer {
+                self.handleUnwindToMenu()
+            } else {
+                self.resetField()
+            }
+        })
+        
+        alert.addAction(okAction)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func handleNewGame() {
+        
+        resetField()
+        
+        let messageDict = ["newGame" : "New Game"]
+        var messageData: Data? = nil
+        
+        do {
+            messageData = try JSONSerialization.data(withJSONObject: messageDict, options: .prettyPrinted)
+        } catch {
+            print("Serialization failed")
+        }
+        
+        if messageData != nil {
+            do {
+                try appDelegate.mpcHandler.session.send(messageData!, toPeers: appDelegate.mpcHandler.session.connectedPeers, with: .reliable)
+            } catch {
+                handleUnwindToMenu()
+            }
+        }
+    }
+    
+    func resetField() {
+        
+        currentPlayer = "X"
+        k = 0
+        
+        for item in container {
+            item.setTitle(" ", for: .normal)
+            item.isUserInteractionEnabled = true
+        }
     }
 }
 
 extension TTTGameViewController: GridGameDelegate {
     
     func actionOnSender(_ sender: AnyObject) {
+        
         let sender = sender as! UIButton
-        if sender.currentTitle != playerSignature && sender.currentTitle != computerSignature {
+        
+        //single player
+        if singlePlayer {
             
-            sender.setTitle(playerSignature, for: UIControlState())
-            k += 1
+            sender.setTitle(playerSignature, for: .normal)
+            sender.isUserInteractionEnabled = false
             
-            if !searchWinner(k) {
+            if !searchWinner(withSignature: playerSignature, andName: "Player") {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
                     self.gameEngine.searchPosition(self.container, self.computerSignature, self.playerSignature)
                     
-                    self.k += 1
-                    
-                    _ = self.searchWinner(self.k)
-                    
+                    _ = self.searchWinner(withSignature: self.computerSignature, andName: "Computer")
                 })
+            }
+            
+        } else {
+            //multiplayer
+            
+            sender.setTitle(currentPlayer, for: .normal)
+            sender.isUserInteractionEnabled = false
+            
+            //send data
+            let messageDict = ["cell":container[sender.tag].tag, "player":currentPlayer] as [String : Any] 
+            var messageData: Data? = nil
+            
+            do {
+                messageData = try JSONSerialization.data(withJSONObject: messageDict, options: .prettyPrinted)
+            } catch {
+                //some error
+                print("JSONSerialization failed")
+            }
+            
+            if messageData != nil {
+                do {
+                    try appDelegate.mpcHandler.session.send(messageData!, toPeers: appDelegate.mpcHandler.session.connectedPeers, with: .reliable)
+                } catch {
+                    //some error
+                    print("Sending data failed")
+                }
+            }
+            
+            //search for winner
+            if connected {
+                if !searchWinner(withSignature: "X", andName: "X") {
+                    _ = searchWinner(withSignature: "0", andName: "0")
+                }
             }
         }
     }
@@ -179,6 +349,7 @@ extension TTTGameViewController: GridGameDataSource {
         cell.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
         cell.titleLabel?.font = UIFont.systemFont(ofSize: 40)
         cell.layer.borderColor = UIColor.black.cgColor
+        cell.tag = cellTag
         container.append(cell)
         view.addSubview(cell)
     }
@@ -189,11 +360,24 @@ extension TTTGameViewController: GridGameDataSource {
             for _ in 0 ..< Int(gridSize) {
                 createCell(at: startX, y: startY, ofSize: cellSize, to: self.drawingBoard)
                 startX = startX + cellSize
+                
+                cellTag += 1
             }
             
             startX = startX - (cellSize * gridSize)
             startY = startY + cellSize
         }
+    }
+}
+
+extension TTTGameViewController: MCBrowserViewControllerDelegate {
+    
+    func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
+        appDelegate.mpcHandler.browser.dismiss(animated: true, completion: nil)
+    }
+    
+    func browserViewControllerWasCancelled(_ browserViewController: MCBrowserViewController) {
+        appDelegate.mpcHandler.browser.dismiss(animated: true, completion: nil)
     }
 }
 

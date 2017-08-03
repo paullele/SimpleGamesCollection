@@ -9,23 +9,35 @@
 import UIKit
 
 class TTTMenuViewController: UIViewController {
+    
+    @IBAction func singlePlayer(_ sender: UIButton) {
+        let alert = UIAlertController(title: "Tic Tac Toe", message: "Would you like to go first", preferredStyle: .actionSheet)
+        
+        let yesAction = UIAlertAction(title: "Yes", style: .default, handler: {
+            action in self.handleSegueComputer(first: false)
+        })
+        
+        let noAction = UIAlertAction(title: "No", style: .default, handler: {
+            action in self.handleSegueComputer(first: true)
+        })
+        
+        alert.addAction(yesAction)
+        alert.addAction(noAction)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let identifier = segue.identifier {
-            switch identifier {
-            case "computerFirst":
-                if let viewController = segue.destination as? TTTGameViewController {
-                    viewController.computerGoesFirst = true
-                }
-            case "playerFirst":
-                if let viewController = segue.destination as? TTTGameViewController {
-                    viewController.computerGoesFirst = false
-                }
-                
-            default:
-                break
-            }
-        }
+    @IBAction func multiPlayer(_ sender: UIButton) {
+        let gameViewController = self.storyboard?.instantiateViewController(withIdentifier: "TTTGameViewController") as! TTTGameViewController
+        
+        gameViewController.singlePlayer = false
+        self.navigationController?.pushViewController(gameViewController, animated: true)
+    }
+    
+    func handleSegueComputer(first: Bool) {
+        let gameViewController = self.storyboard?.instantiateViewController(withIdentifier: "TTTGameViewController") as! TTTGameViewController
+        gameViewController.computerGoesFirst = first
+        self.navigationController?.pushViewController(gameViewController, animated: true)
     }
     
     @IBAction func unwindToTTTMenu(segue: UIStoryboardSegue){}

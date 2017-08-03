@@ -13,6 +13,7 @@
 		1815FF881F26842D006D61FA /* TOMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1815FF851F26842D006D61FA /* TOMenuViewController.swift */; };
 		1822AAAA1F23813A00537695 /* MSGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1822AAA71F23813A00537695 /* MSGameViewController.swift */; };
 		1822AAAB1F23813A00537695 /* MSMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1822AAA81F23813A00537695 /* MSMenuViewController.swift */; };
+		183CA3AE1F33284B001959DD /* MPCHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183CA3AD1F33284B001959DD /* MPCHandler.swift */; };
 		189137161F2622DC004B9AB7 /* NPGameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189137131F2622DC004B9AB7 /* NPGameEngine.swift */; };
 		189137171F2622DC004B9AB7 /* NPGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189137141F2622DC004B9AB7 /* NPGameViewController.swift */; };
 		189137181F2622DC004B9AB7 /* NPMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189137151F2622DC004B9AB7 /* NPMenuViewController.swift */; };
@@ -44,6 +45,7 @@
 		1815FF851F26842D006D61FA /* TOMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TOMenuViewController.swift; sourceTree = "<group>"; };
 		1822AAA71F23813A00537695 /* MSGameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSGameViewController.swift; sourceTree = "<group>"; };
 		1822AAA81F23813A00537695 /* MSMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSMenuViewController.swift; sourceTree = "<group>"; };
+		183CA3AD1F33284B001959DD /* MPCHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MPCHandler.swift; sourceTree = "<group>"; };
 		189137131F2622DC004B9AB7 /* NPGameEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NPGameEngine.swift; sourceTree = "<group>"; };
 		189137141F2622DC004B9AB7 /* NPGameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NPGameViewController.swift; sourceTree = "<group>"; };
 		189137151F2622DC004B9AB7 /* NPMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NPMenuViewController.swift; sourceTree = "<group>"; };
@@ -180,6 +182,7 @@
 		18FC33A51F222B4F0015D82C /* TicTacToe */ = {
 			isa = PBXGroup;
 			children = (
+				183CA3AD1F33284B001959DD /* MPCHandler.swift */,
 				18FC33A61F2231800015D82C /* TTTSignatures.swift */,
 				18FC33AC1F2231A50015D82C /* TTTDrawingBoard.swift */,
 				18FC33AD1F2231A50015D82C /* TTTGameEngine.swift */,
@@ -270,6 +273,7 @@
 				1815FF881F26842D006D61FA /* TOMenuViewController.swift in Sources */,
 				18FC33AB1F2231990015D82C /* TTTGameViewController.swift in Sources */,
 				18C8473E1F27821100142CD1 /* GNMenuViewController.swift in Sources */,
+				183CA3AE1F33284B001959DD /* MPCHandler.swift in Sources */,
 				189137161F2622DC004B9AB7 /* NPGameEngine.swift in Sources */,
 				18035D251F288AA200503680 /* MSGameEngine.swift in Sources */,
 				18AE05D21F21FDEF00E50ED2 /* SGCViewController.swift in Sources */,
