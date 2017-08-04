@@ -18,7 +18,8 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
     private var game = TOGameEngine()
     var computerGoesFirst = false
     var playersTurn = true;
-    var singlePlayer = false
+    
+    var singlePlayer = true
     
     fileprivate var gameEnded = false
     
@@ -28,19 +29,31 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
+    func resetGame() {
+        numberOfSticks = 21
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
-        self.navigationController?.isNavigationBarHidden = true
+        let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
         
-        managePlayersButtons()
-        
-        if computerGoesFirst {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
-                self.computerTakesSticks()
-            })
+        if singlePlayer {
+            
+            self.navigationItem.leftBarButtonItem = backButton
+            
+            managePlayersButtons()
+            
+            if computerGoesFirst {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+                    self.computerTakesSticks()
+                })
+            }
+        } else {
+            let connectButton = UIBarButtonItem(title: "Connect", style: .plain, target: self, action: #selector(resetGame))
+            self.navigationItem.rightBarButtonItem = connectButton
         }
     }
     
@@ -103,7 +116,7 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         if gameEnded {
             performSegue(withIdentifier: "unwindToTOMenu", sender: UIButton())
         } else {
-            let alert = UIAlertController(title: "Are you sure you want to start a new game?", message: nil, preferredStyle: .actionSheet)
+            let alert = UIAlertController(title: "Are you sure you want to start a new game?", message: nil, preferredStyle: .alert)
             
             let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: {
                 action in self.performSegue(withIdentifier: "unwindToTOMenu", sender: nil)

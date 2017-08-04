@@ -262,41 +262,30 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="200" translatesAutoresizingMaskIntoConstraints="NO" id="5oJ-vE-ACC">
-                                <rect key="frame" x="87" y="70" width="200" height="250.5"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="zBG-AI-jSA">
+                                <rect key="frame" x="145" y="296" width="84" height="75"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Would you like to go first?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3FF-73-NeZ">
-                                        <rect key="frame" x="0.0" y="0.0" width="200" height="20.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="140" translatesAutoresizingMaskIntoConstraints="NO" id="np7-nf-Jka">
-                                        <rect key="frame" x="0.0" y="220.5" width="200" height="30"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x7a-e0-hvi">
-                                                <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
-                                                <state key="normal" title="Yes"/>
-                                                <connections>
-                                                    <segue destination="AnW-XX-JRk" kind="show" identifier="playerFirst" id="rFu-El-u0S"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tR5-aq-PbQ">
-                                                <rect key="frame" x="170" y="0.0" width="30" height="30"/>
-                                                <state key="normal" title="No"/>
-                                                <connections>
-                                                    <segue destination="AnW-XX-JRk" kind="show" identifier="computerFirst" id="rpb-fR-egs"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O1y-28-dkz">
+                                        <rect key="frame" x="0.0" y="0.0" width="84" height="30"/>
+                                        <state key="normal" title="Singleplayer"/>
+                                        <connections>
+                                            <action selector="singlePlayer:" destination="Ucp-bm-OZh" eventType="touchUpInside" id="qL8-Km-g6C"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8La-d8-Gsx">
+                                        <rect key="frame" x="0.0" y="45" width="84" height="30"/>
+                                        <state key="normal" title="Multiplayer"/>
+                                        <connections>
+                                            <action selector="multiPlayer:" destination="Ucp-bm-OZh" eventType="touchUpInside" id="9rH-pw-Ree"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="5oJ-vE-ACC" firstAttribute="top" secondItem="c5O-WJ-Ttq" secondAttribute="bottom" constant="50" id="JCh-RV-tty"/>
-                            <constraint firstItem="5oJ-vE-ACC" firstAttribute="centerX" secondItem="0gN-l7-uIq" secondAttribute="centerX" id="ZMd-SR-rMD"/>
+                            <constraint firstItem="zBG-AI-jSA" firstAttribute="centerY" secondItem="0gN-l7-uIq" secondAttribute="centerY" id="0Ls-RJ-j9s"/>
+                            <constraint firstItem="zBG-AI-jSA" firstAttribute="centerX" secondItem="0gN-l7-uIq" secondAttribute="centerX" id="tR8-YT-dNs"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -550,7 +539,7 @@
         <!--Game View Controller-->
         <scene sceneID="vfL-UH-ef4">
             <objects>
-                <viewController id="AnW-XX-JRk" customClass="TOGameViewController" customModule="SimpleGamesCollection" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TOGameViewController" id="AnW-XX-JRk" customClass="TOGameViewController" customModule="SimpleGamesCollection" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="nnb-7e-bT7"/>
                         <viewControllerLayoutGuide type="bottom" id="HOG-oN-YtW"/>
@@ -719,7 +708,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="rpb-fR-egs"/>
         <segue reference="b5R-5r-Qe9"/>
     </inferredMetricsTieBreakers>
 </document>
