@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MultipeerConnectivity
 
 class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
     
@@ -15,11 +16,15 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
     @IBOutlet weak var button1: UIButton!
     @IBOutlet weak var button2: UIButton!
     
-    private var game = TOGameEngine()
+    private var gameEngine: TOGameEngine?
     var computerGoesFirst = false
     var playersTurn = true;
     
     var singlePlayer = true
+    var appDelegate: AppDelegate!
+    var mp_Name: String?
+    
+    var connected = false
     
     fileprivate var gameEnded = false
     
@@ -29,8 +34,34 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    func resetGame() {
+    func handleNewGame() {
+        
         numberOfSticks = 21
+        
+        let messageDict = ["newGame" : "New Game"]
+        var messageData: Data? = nil
+        
+        do {
+            messageData = try JSONSerialization.data(withJSONObject: messageDict, options: .prettyPrinted)
+        } catch {
+            print("Serialization failed")
+        }
+        
+        if messageData != nil {
+            do {
+                try appDelegate.mpcHandler.session.send(messageData!, toPeers: appDelegate.mpcHandler.session.connectedPeers, with: .reliable)
+            } catch {
+                handleUnwindToMenu()
+            }
+        }
+    }
+    
+    func connectWithPeers() {
+        if appDelegate.mpcHandler.session != nil {
+            appDelegate.mpcHandler.setupBroser()
+            appDelegate.mpcHandler.browser.delegate = self
+            self.present(appDelegate.mpcHandler.browser, animated: true, completion: nil)
+        }
     }
     
     override func viewDidLoad() {
@@ -38,10 +69,11 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
-        let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
-        
         if singlePlayer {
             
+            gameEngine = TOGameEngine()
+            
+            let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
             self.navigationItem.leftBarButtonItem = backButton
             
             managePlayersButtons()
@@ -52,15 +84,102 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
                 })
             }
         } else {
-            let connectButton = UIBarButtonItem(title: "Connect", style: .plain, target: self, action: #selector(resetGame))
+            //multiplayer 
+            
+            mp_Name = UIDevice.current.name
+            print(mp_Name!)
+            
+            let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleNewGame))
+            self.navigationItem.leftBarButtonItem = backButton
+            
+            let connectButton = UIBarButtonItem(title: "Connect", style: .plain, target: self, action: #selector(connectWithPeers))
             self.navigationItem.rightBarButtonItem = connectButton
+            
+            appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.mpcHandler.setupPeerWithDisplay(name: UIDevice.current.name)
+            appDelegate.mpcHandler.setuptSession()
+            appDelegate.mpcHandler.advertiseSelf(advertise: true)
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(peerChangedState), name: Notification.Name("MPC_DidChangeStateNotification"), object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(handleReceivedData), name: Notification.Name("MPC_DidReceiveDataNotification"), object: nil)
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.isNavigationBarHidden = false
+    func peerChangedState(withNotification notification: Notification) {
+        let userInfo = notification.userInfo!
+        let state = userInfo["state"] as! Int
+        
+        if state == MCSessionState.connected.rawValue {
+            self.navigationItem.title = "Connected"
+            connected = true
+        } else if state == MCSessionState.notConnected.rawValue {
+            self.navigationItem.title = "Not Connected"
+            connected = false
+        }
     }
+    
+    func handleReceivedData(withNotification notification: Notification) {
+        let userInfo = notification.userInfo!
+        let receivedData: Data = userInfo["data"] as! Data
+        
+        let message: [String : Any] = try! JSONSerialization.jsonObject(with: receivedData, options: .allowFragments) as! [String : Any]
+        
+        let senderPeerId = userInfo["peerID"] as! MCPeerID
+        let senderDisplayName = senderPeerId.displayName
+        
+        if message["newGame"] as? String == "New Game" {
+            let alert = UIAlertController(title: "21 sticks", message: "\(senderDisplayName) wants to start a new game", preferredStyle: .alert)
+            
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: { [unowned self]
+                action in self.numberOfSticks = 21
+            })
+            
+            let noAction = UIAlertAction(title: "Nope", style: .default, handler: { [unowned self]
+                action in
+                
+                self.appDelegate.mpcHandler.session.disconnect()
+                self.appDelegate.mpcHandler.advertiseSelf(advertise: false)
+                self.handleUnwindToMenu()
+            })
+            
+            alert.addAction(okAction)
+            alert.addAction(noAction)
+            
+            self.present(alert, animated: true, completion: nil)
+            
+        } else {
+            let takenNumber: Int? = message["takenNumber"] as? Int
+            let opponentName: String? = message["player"] as? String
+            
+            if takenNumber != nil && opponentName != nil {
+                displayMessage.text = "\(opponentName!) takes \(takenNumber!)"
+                numberOfSticks -= takenNumber!
+                
+                if numberOfSticks == 0 {
+                    //you win
+                    handleEndGame(withMessage: "You won!")
+                }
+            }
+        }
+    }
+    
+    func handleEndGame(withMessage message: String) {
+        let alert = UIAlertController(title: "21 sticks", message: message, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: { [unowned self]
+            action in
+            if self.singlePlayer {
+                self.handleUnwindToMenu()
+            } else {
+                self.displayMessage.text = " "
+                self.numberOfSticks = 21
+            }
+        })
+        
+        alert.addAction(okAction)
+        self.present(alert, animated: true, completion: nil)
+    }
+
     
     func updateSticksLeft(with number: Int) {
         sticksLeft.text = String(number)
@@ -87,31 +206,58 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
     
     @IBAction func takeSticks(_ sender: UIButton) {
         
-        let takenNumber = Int(sender.currentTitle!)
+        let takenNumber = sender.tag
         
-        numberOfSticks -= takenNumber!
+        self.displayMessage.text = "You took \(sender.tag)"
+        numberOfSticks -= takenNumber
         
-        if takenNumber == 1 {
-            displayMessage.text = "Player takes 1 stick"
+        if singlePlayer {
+            if takenNumber == 1 {
+                displayMessage.text = "Player takes 1 stick"
+            } else {
+                displayMessage.text = "Player takes 2 sticks"
+            }
+            
+            if numberOfSticks <= 0 {
+                displayMessage.text = "Computer wins"
+                gameEnded = true
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
+                    self.computerTakesSticks()
+                })
+            }
+            
+            playersTurn = false
+            managePlayersButtons()
         } else {
-            displayMessage.text = "Player takes 2 sticks"
+            
+            if numberOfSticks == 0 {
+                //you lost
+                handleEndGame(withMessage: "You lost :(")
+            }
+            
+            //send data
+            let messageDict = ["takenNumber" : takenNumber, "player": mp_Name!] as [String : Any]
+            var messageData: Data? = nil
+            
+            do {
+                messageData = try JSONSerialization.data(withJSONObject: messageDict, options: .prettyPrinted)
+            } catch {
+                print("Serialization failed")
+            }
+            
+            if messageData != nil {
+                do {
+                    try appDelegate.mpcHandler.session.send(messageData!, toPeers: appDelegate.mpcHandler.session.connectedPeers, with: .reliable)
+                } catch {
+                    print("Sending data failed")
+                }
+            }
         }
-        
-        if numberOfSticks <= 0 {
-            displayMessage.text = "Computer wins"
-            gameEnded = true
-        } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
-                self.computerTakesSticks()
-            })
-        }
-        
-        playersTurn = false
-        managePlayersButtons()
     }
     
     
-    @objc func handleUnwindToMenu() {
+    func handleUnwindToMenu() {
         
         if gameEnded {
             performSegue(withIdentifier: "unwindToTOMenu", sender: UIButton())
@@ -131,9 +277,11 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
+    
+    //to something to move this to engine
     func computerTakesSticks() {
         
-        let computerTakesSticks = game.takeSticks(numberOfSticks)
+        let computerTakesSticks = gameEngine!.takeSticks(numberOfSticks)
 
         numberOfSticks -= computerTakesSticks
         
@@ -152,6 +300,17 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         playersTurn = true
         managePlayersButtons()
+    }
+}
+
+extension TOGameViewController: MCBrowserViewControllerDelegate {
+    
+    func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
+        appDelegate.mpcHandler.browser.dismiss(animated: true, completion: nil)
+    }
+    
+    func browserViewControllerWasCancelled(_ browserViewController: MCBrowserViewController) {
+        appDelegate.mpcHandler.browser.dismiss(animated: true, completion: nil)
     }
 }
 

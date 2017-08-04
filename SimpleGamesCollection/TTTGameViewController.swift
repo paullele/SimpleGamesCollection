@@ -163,13 +163,13 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
             appDelegate.mpcHandler.setuptSession()
             appDelegate.mpcHandler.advertiseSelf(advertise: true)
             
-            NotificationCenter.default.addObserver(self, selector: #selector(peerChangedStateWith), name: Notification.Name("MPC_DidChangeStateNotification"), object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(peerChangedState), name: Notification.Name("MPC_DidChangeStateNotification"), object: nil)
             
-            NotificationCenter.default.addObserver(self, selector: #selector(handleReceivedDataWith), name: Notification.Name("MPC_DidReceiveDataNotification"), object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(handleReceivedData), name: Notification.Name("MPC_DidReceiveDataNotification"), object: nil)
         }
     }
     
-    func peerChangedStateWith(notification: Notification) {
+    func peerChangedState(withNotification notification: Notification) {
         let userInfo = NSDictionary(dictionary: notification.userInfo!)
         let state = userInfo.object(forKey: "state") as! Int
         
@@ -183,12 +183,12 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    func handleReceivedDataWith(notification: Notification) {
+    func handleReceivedData(withNotification notification: Notification) {
         
         let userInfo = notification.userInfo!
         let receiveData: Data = userInfo["data"] as! Data
         
-        let message: [String : Any] = try! JSONSerialization.jsonObject(with: receiveData, options: JSONSerialization.ReadingOptions.allowFragments) as! [String : Any]
+        let message: [String : Any] = try! JSONSerialization.jsonObject(with: receiveData, options: .allowFragments) as! [String : Any]
         
         let senderPeerID = userInfo["peerID"] as! MCPeerID
         let senderDisplayName = senderPeerID.displayName
