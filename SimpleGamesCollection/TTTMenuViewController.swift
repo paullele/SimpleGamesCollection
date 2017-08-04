@@ -11,7 +11,7 @@ import UIKit
 class TTTMenuViewController: UIViewController {
     
     @IBAction func singlePlayer(_ sender: UIButton) {
-        let alert = UIAlertController(title: "Tic Tac Toe", message: "Would you like to go first", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "Tic Tac Toe", message: "Would you like to go first", preferredStyle: .alert)
         
         let yesAction = UIAlertAction(title: "Yes", style: .default, handler: {
             action in self.handleSegueComputer(first: false)

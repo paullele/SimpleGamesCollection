@@ -10,13 +10,12 @@ import UIKit
 import MultipeerConnectivity
 
 class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
-        
+    
     let gridSize: CGFloat = 3
-    private var signaturesInit: TTTSignatures!
+    let gameEngine = TTTGameEngine()
+    
     var gameEnded = false
     var cellSize: CGFloat!
-    
-    let gameEngine = TTTGameEngine()
     
     var k: Int = 0
     var cellTag = 0
@@ -24,23 +23,16 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     var container = [UIButton]()
     var startX: CGFloat!
     var startY: CGFloat!
-    var singlePlayer: Bool = true
+    
+    var singlePlayer = true
     
     var currentPlayer: String = "X"
     var connected = false
     var appDelegate: AppDelegate!
     
-    var computerSignature: String {
-        get {
-            return signaturesInit.getComputerSig
-        }
-    }
+    var computerSignature: String!
     
-    var playerSignature: String {
-        get {
-            return signaturesInit.getPlayerSig
-        }
-    }
+    var playerSignature: String!
     
     var computerGoesFirst: Bool?
     
@@ -52,7 +44,7 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
             
             let yesAction = UIAlertAction(title: "Yes, I'm sure!", style: .destructive, handler: {
                 
-                action in
+                [unowned self] action in
                 
                 self.performSegue(withIdentifier: "unwindToTTTMenu", sender: nil)
                 
@@ -70,21 +62,38 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
+    func handleEndGameWith(message: String) {
+        
+        gameEnded = true
+        
+        let alert = UIAlertController(title: "Tic Tac Toe", message: message, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: {
+            [unowned self] action in
+            
+            if self.singlePlayer {
+                self.handleUnwindToMenu()
+            } else {
+                self.resetField()
+            }
+        })
+        
+        alert.addAction(okAction)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+
     func searchWinner(withSignature signature: String, andName name: String) -> Bool {
         
         k += 1
         
         if k > 4 {
             if gameEngine.existsWinner(container, signature) {
-                gameEnded = true
                 handleEndGameWith(message: "\(name) won")
                 return true
+            } else if k == 9 {
+                handleEndGameWith(message: "Tie")
             }
-        }
-        
-        if k == 9 && !gameEnded {
-            gameEnded = true
-            handleEndGameWith(message: "Tie")
         }
         
         return false
@@ -94,6 +103,7 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         if (navigationController?.viewControllers.count)! > 1 {
             handleUnwindToMenu()
         }
+        
         return false
     }
     
@@ -126,7 +136,8 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
             navigationItem.leftBarButtonItem = backButton
             
             if computerGoesFirst! {
-                signaturesInit = TTTSignatures(playerSignature: "0", computerSignature: "X")
+                computerSignature = "X"
+                playerSignature = "0"
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
                     self.gameEngine.searchPosition(self.container, self.computerSignature, self.playerSignature)
@@ -134,7 +145,8 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
                 })
             }
             else {
-                signaturesInit = TTTSignatures(playerSignature: "X", computerSignature: "0")
+                computerSignature = "0"
+                playerSignature = "X"
             }
         } else {
             
@@ -184,11 +196,11 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         if message["newGame"] as? String == "New Game" {
             let alert = UIAlertController(title: "Tic Tac Toe", message: "\(senderDisplayName) wants to start a new game", preferredStyle: .actionSheet)
             
-            let okAction = UIAlertAction(title: "OK", style: .default, handler: {
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: { [unowned self]
                 action in self.resetField()
             })
             
-            let noAction = UIAlertAction(title: "Nope", style: .default, handler: {
+            let noAction = UIAlertAction(title: "Nope", style: .default, handler: { [unowned self]
                 action in
 
                 self.appDelegate.mpcHandler.session.disconnect()
@@ -228,26 +240,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
             appDelegate.mpcHandler.browser.delegate = self
             self.present(appDelegate.mpcHandler.browser, animated: true, completion: nil)
         }
-    }
-    
-    func handleEndGameWith(message: String) {
-        gameEnded = true
-        
-        let alert = UIAlertController(title: "Tic Tac Toe", message: message, preferredStyle: .alert)
-        
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {
-            action in
-            
-            if self.singlePlayer {
-                self.handleUnwindToMenu()
-            } else {
-                self.resetField()
-            }
-        })
-        
-        alert.addAction(okAction)
-        
-        self.present(alert, animated: true, completion: nil)
     }
     
     func handleNewGame() {
@@ -296,7 +288,7 @@ extension TTTGameViewController: GridGameDelegate {
             sender.setTitle(playerSignature, for: .normal)
             sender.isUserInteractionEnabled = false
             
-            if !searchWinner(withSignature: playerSignature, andName: "Player") {
+            if !searchWinner(withSignature: playerSignature, andName: "Player") && !gameEnded {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
                     self.gameEngine.searchPosition(self.container, self.computerSignature, self.playerSignature)
                     

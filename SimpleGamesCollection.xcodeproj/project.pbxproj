@@ -31,7 +31,6 @@
 		18C8473C1F27821100142CD1 /* GNGameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C847391F27821100142CD1 /* GNGameEngine.swift */; };
 		18C8473D1F27821100142CD1 /* GNGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C8473A1F27821100142CD1 /* GNGameViewController.swift */; };
 		18C8473E1F27821100142CD1 /* GNMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C8473B1F27821100142CD1 /* GNMenuViewController.swift */; };
-		18FC33A71F2231800015D82C /* TTTSignatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FC33A61F2231800015D82C /* TTTSignatures.swift */; };
 		18FC33AA1F2231990015D82C /* TTTMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FC33A81F2231990015D82C /* TTTMenuViewController.swift */; };
 		18FC33AB1F2231990015D82C /* TTTGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FC33A91F2231990015D82C /* TTTGameViewController.swift */; };
 		18FC33AE1F2231A50015D82C /* TTTDrawingBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FC33AC1F2231A50015D82C /* TTTDrawingBoard.swift */; };
@@ -65,7 +64,6 @@
 		18C847391F27821100142CD1 /* GNGameEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GNGameEngine.swift; sourceTree = "<group>"; };
 		18C8473A1F27821100142CD1 /* GNGameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GNGameViewController.swift; sourceTree = "<group>"; };
 		18C8473B1F27821100142CD1 /* GNMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GNMenuViewController.swift; sourceTree = "<group>"; };
-		18FC33A61F2231800015D82C /* TTTSignatures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTTSignatures.swift; sourceTree = "<group>"; };
 		18FC33A81F2231990015D82C /* TTTMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTTMenuViewController.swift; sourceTree = "<group>"; };
 		18FC33A91F2231990015D82C /* TTTGameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTTGameViewController.swift; sourceTree = "<group>"; };
 		18FC33AC1F2231A50015D82C /* TTTDrawingBoard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTTDrawingBoard.swift; sourceTree = "<group>"; };
@@ -134,6 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				18AE05CF1F21FDEF00E50ED2 /* AppDelegate.swift */,
+				183CA3AD1F33284B001959DD /* MPCHandler.swift */,
 				18B8FBC41F32156100BCD189 /* GridGameDelegate.swift */,
 				18B8FBC61F32157400BCD189 /* GridGameDataSource.swift */,
 				18AE05D11F21FDEF00E50ED2 /* SGCViewController.swift */,
@@ -182,8 +181,6 @@
 		18FC33A51F222B4F0015D82C /* TicTacToe */ = {
 			isa = PBXGroup;
 			children = (
-				183CA3AD1F33284B001959DD /* MPCHandler.swift */,
-				18FC33A61F2231800015D82C /* TTTSignatures.swift */,
 				18FC33AC1F2231A50015D82C /* TTTDrawingBoard.swift */,
 				18FC33AD1F2231A50015D82C /* TTTGameEngine.swift */,
 				18FC33A81F2231990015D82C /* TTTMenuViewController.swift */,
@@ -266,7 +263,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18FC33A71F2231800015D82C /* TTTSignatures.swift in Sources */,
 				18FC33AE1F2231A50015D82C /* TTTDrawingBoard.swift in Sources */,
 				18B8FBC71F32157400BCD189 /* GridGameDataSource.swift in Sources */,
 				18FC33AF1F2231A50015D82C /* TTTGameEngine.swift in Sources */,

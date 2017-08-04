@@ -56,7 +56,6 @@ extension MPCHandler: MCSessionDelegate {
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: Notification.Name("MPC_DidReceiveDataNotification"), object: nil, userInfo: userData)
         }
-        
     }
     
     func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress) {

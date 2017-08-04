@@ -18,6 +18,7 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
     private var game = TOGameEngine()
     var computerGoesFirst = false
     var playersTurn = true;
+    var singlePlayer = false
     
     fileprivate var gameEnded = false
     
