@@ -56,7 +56,6 @@ class MSGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @objc private func handleUnwindToMenu() {
-        
         if gameEnded {
             self.performSegue(withIdentifier: "unwindToMSMenu", sender: self)
         } else {

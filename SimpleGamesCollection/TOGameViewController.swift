@@ -33,9 +33,9 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
             updateSticksLeft(with: numberOfSticks)
         }
     }
-    
+
+    //OTHER STUFF
     func handleNewGame() {
-        
         numberOfSticks = 21
         
         let messageDict = ["newGame" : "New Game"]
@@ -67,10 +67,10 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        appDelegate = UIApplication.shared.delegate as! AppDelegate
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         
         if singlePlayer {
-            
             gameEngine = TOGameEngine()
             
             let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
@@ -87,7 +87,6 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
             //multiplayer 
             
             mp_Name = UIDevice.current.name
-            print(mp_Name!)
             
             let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleNewGame))
             self.navigationItem.leftBarButtonItem = backButton
@@ -95,7 +94,7 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
             let connectButton = UIBarButtonItem(title: "Connect", style: .plain, target: self, action: #selector(connectWithPeers))
             self.navigationItem.rightBarButtonItem = connectButton
             
-            appDelegate = UIApplication.shared.delegate as! AppDelegate
+            
             appDelegate.mpcHandler.setupPeerWithDisplay(name: UIDevice.current.name)
             appDelegate.mpcHandler.setuptSession()
             appDelegate.mpcHandler.advertiseSelf(advertise: true)
@@ -179,7 +178,6 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
     }
-
     
     func updateSticksLeft(with number: Int) {
         sticksLeft.text = String(number)
@@ -193,7 +191,6 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     private func managePlayersButtons() {
-        
         if playersTurn {
             button1.isEnabled = true
             button2.isEnabled = true
@@ -203,9 +200,7 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    
     @IBAction func takeSticks(_ sender: UIButton) {
-        
         let takenNumber = sender.tag
         
         self.displayMessage.text = "You took \(sender.tag)"
@@ -219,8 +214,9 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
             }
             
             if numberOfSticks <= 0 {
-                displayMessage.text = "Computer wins"
                 gameEnded = true
+                handleEndGame(withMessage: "You lost :(")
+                
             } else {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
                     self.computerTakesSticks()
@@ -256,15 +252,13 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
-    
     func handleUnwindToMenu() {
-        
         if gameEnded {
             performSegue(withIdentifier: "unwindToTOMenu", sender: UIButton())
         } else {
             let alert = UIAlertController(title: "Are you sure you want to start a new game?", message: nil, preferredStyle: .alert)
             
-            let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: {
+            let yesAction = UIAlertAction(title: "Yes", style: .default, handler: {
                 action in self.performSegue(withIdentifier: "unwindToTOMenu", sender: nil)
             })
             
@@ -277,13 +271,27 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         }
     }
     
+    func applyHeuristic() -> Int? {
+        if numberOfSticks == 2 {
+            return 1
+        }
+        
+        if numberOfSticks == 3 {
+            return 2
+        }
+        return nil
+    }
     
-    //to something to move this to engine
+    //do something to move this to engine
     func computerTakesSticks() {
         
-        let computerTakesSticks = gameEngine!.takeSticks(numberOfSticks)
-
-        numberOfSticks -= computerTakesSticks
+        //let computerTakesSticks = gameEngine!.takeSticks(numberOfSticks)
+        
+        var computerTakesSticks: Int?
+        
+        computerTakesSticks = Int(arc4random_uniform(2) + 1)
+        
+        numberOfSticks -= computerTakesSticks!
         
         if computerTakesSticks == 1 {
             displayMessage.text = "Computer takes 1 stick"
@@ -293,7 +301,7 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
         
         if numberOfSticks <= 0 {
             gameEnded = true
-            displayMessage.text = "Player wins"
+            handleEndGame(withMessage: "You won!")
             playersTurn = false
             managePlayersButtons()
         }
@@ -304,7 +312,6 @@ class TOGameViewController: UIViewController, UIGestureRecognizerDelegate {
 }
 
 extension TOGameViewController: MCBrowserViewControllerDelegate {
-    
     func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
         appDelegate.mpcHandler.browser.dismiss(animated: true, completion: nil)
     }

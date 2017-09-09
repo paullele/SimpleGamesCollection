@@ -64,6 +64,7 @@ class NPGameViewController: UIViewController, UIGestureRecognizerDelegate {
             
             self.performSegue(withIdentifier: "unwindToNPMenu", sender: UIBarButtonItem())
         })
+        
         let noAction = UIAlertAction(title: "No", style: .cancel, handler: nil)
         
         action.addAction(yesAction)
@@ -85,14 +86,12 @@ extension NPGameViewController: GridGameDelegate {
     }
     
     func actionOnSender(_ sender: AnyObject) {
-        
         let sender = sender as! UIButton
         
         let slotTag = sender.tag
         var changed = false
         
         if slotTag + 1 % Int(gridSize) == 0 {
-            
             if slotTag + Int(gridSize) < bound + 1 {
                 if container[slotTag + Int(gridSize)].currentTitle == ""   {
                     performMove(from: sender, to: container[slotTag + Int(gridSize)])
@@ -116,7 +115,6 @@ extension NPGameViewController: GridGameDelegate {
         }
             
         else if slotTag % Int(gridSize) == 0 {
-            
             if slotTag + Int(gridSize) < bound + 1 {
                 if container[slotTag + Int(gridSize)].currentTitle == ""  {
                     performMove(from: sender, to: container[slotTag + Int(gridSize)])
@@ -138,9 +136,7 @@ extension NPGameViewController: GridGameDelegate {
                 }
             }
         }
-            
         else {
-            
             if slotTag + Int(gridSize) < bound + 1 {
                 if container[slotTag + Int(gridSize)].currentTitle == ""   {
                     performMove(from: sender, to: container[slotTag + Int(gridSize)])

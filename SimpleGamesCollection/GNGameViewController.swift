@@ -17,7 +17,6 @@ class GNGameViewController: UIViewController, UIGestureRecognizerDelegate {
     private var secretNumber: Int?
     private var gameEnded = false
     
-    
     @IBOutlet weak var gameStatus: UILabel!
     @IBOutlet weak var guessingBox: UITextField!
     @IBOutlet weak var guessButton: UIButton!
@@ -59,7 +58,6 @@ class GNGameViewController: UIViewController, UIGestureRecognizerDelegate {
         if (navigationController?.viewControllers.count)! > 1 {
             handleUnwindToMenu()
         }
-        
         return false
     }
 
@@ -71,7 +69,6 @@ class GNGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @IBAction func onGuessButton(_ sender: UIButton) {
-
         if getGuess >= 0 {
             if(getGuess == secretNumber) {
                 gameStatus.text = "Correct!"
@@ -92,7 +89,6 @@ class GNGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     @objc func handleUnwindToMenu() {
-        
         if gameEnded {
             self.performSegue(withIdentifier: "unwindToGNMenu", sender: nil)
         } else {

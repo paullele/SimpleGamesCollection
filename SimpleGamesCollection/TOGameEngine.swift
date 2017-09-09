@@ -9,9 +9,8 @@
 import Foundation
 
 class TOGameEngine {
-
+    
     func takeSticks(_ number: Int) -> Int {
-        
         if ((number - 2) % 3 == 0 || number - 2 == 0 || number == 1) {
             return 1
         } else {

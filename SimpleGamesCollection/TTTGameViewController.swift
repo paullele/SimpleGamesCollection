@@ -37,7 +37,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     var computerGoesFirst: Bool?
     
     @objc private func handleUnwindToMenu() {
-        
         if !gameEnded {
             
             let controller = UIAlertController(title: "Are you sure you want to start a new game?", message: nil, preferredStyle: .actionSheet)
@@ -63,7 +62,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func handleEndGameWith(message: String) {
-        
         gameEnded = true
         
         let alert = UIAlertController(title: "Tic Tac Toe", message: message, preferredStyle: .alert)
@@ -84,7 +82,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     func searchWinner(withSignature signature: String, andName name: String) -> Bool {
-        
         k += 1
         
         if k > 4 {
@@ -131,7 +128,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
         //if single player
         
         if singlePlayer {
-            
             let backButton = UIBarButtonItem(title: "New Game", style: .plain, target: self, action: #selector(handleUnwindToMenu))
             navigationItem.leftBarButtonItem = backButton
             
@@ -184,7 +180,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func handleReceivedData(withNotification notification: Notification) {
-        
         let userInfo = notification.userInfo!
         let receiveData: Data = userInfo["data"] as! Data
         
@@ -243,7 +238,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func handleNewGame() {
-        
         resetField()
         
         let messageDict = ["newGame" : "New Game"]
@@ -265,7 +259,6 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
     }
     
     func resetField() {
-        
         currentPlayer = "X"
         k = 0
         
@@ -279,12 +272,10 @@ class TTTGameViewController: UIViewController, UIGestureRecognizerDelegate {
 extension TTTGameViewController: GridGameDelegate {
     
     func actionOnSender(_ sender: AnyObject) {
-        
         let sender = sender as! UIButton
         
         //single player
         if singlePlayer {
-            
             sender.setTitle(playerSignature, for: .normal)
             sender.isUserInteractionEnabled = false
             
@@ -297,8 +288,8 @@ extension TTTGameViewController: GridGameDelegate {
             }
             
         } else {
-            //multiplayer
             
+            //multiplayer
             sender.setTitle(currentPlayer, for: .normal)
             sender.isUserInteractionEnabled = false
             
@@ -335,7 +326,6 @@ extension TTTGameViewController: GridGameDelegate {
 extension TTTGameViewController: GridGameDataSource {
     
     func createCell(at x: CGFloat, y: CGFloat, ofSize size: CGFloat, to view: UIView) {
-        
         let cell = UIButton(frame: CGRect(x: x, y: y, width: size, height: size))
         cell.addTarget(self, action: #selector(actionOnSender), for: .touchUpInside)
         cell.setTitleColor(UIColor.init(red: 0, green: 122/255, blue: 1, alpha: 1), for: .normal)
@@ -347,7 +337,6 @@ extension TTTGameViewController: GridGameDataSource {
     }
     
     func populateBoard() {
-        
         for _ in 0 ..< Int(gridSize) {
             for _ in 0 ..< Int(gridSize) {
                 createCell(at: startX, y: startY, ofSize: cellSize, to: self.drawingBoard)

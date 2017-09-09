@@ -18,7 +18,6 @@ var gameMode = GameMode.normal
 
 class MSMenuViewController: UIViewController {
     
-    
     @IBOutlet var gameModeButtons: [UIButton]!
     
     @IBAction func unwindToMSMenu(segue: UIStoryboardSegue){}

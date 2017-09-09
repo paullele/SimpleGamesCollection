@@ -43,7 +43,6 @@ class HDrawingBoard: UIView {
     }
     
     private func drawHead() {
-        
         let radius = self.frame.width * 5 / 100
         let x = self.frame.width * 6.25 / 100
         let y = self.frame.height * 12 / 100
@@ -57,7 +56,6 @@ class HDrawingBoard: UIView {
     }
     
     private func drawTorso() {
-        
         let path = UIBezierPath()
         UIColor.black.set()
         path.lineWidth = 3
@@ -76,7 +74,6 @@ class HDrawingBoard: UIView {
     }
     
     private func drawArms(number: Arms, startX: CGFloat, startY: CGFloat, endX: CGFloat, endY: CGFloat) {
-        
         let path = UIBezierPath()
         
         UIColor.black.set()
@@ -90,7 +87,6 @@ class HDrawingBoard: UIView {
     }
     
     private func drawLegs(number: Legs, startX: CGFloat, startY: CGFloat, endX: CGFloat, endY: CGFloat) {
-        
         let path = UIBezierPath()
         
         UIColor.black.set()
@@ -104,7 +100,6 @@ class HDrawingBoard: UIView {
     }
 
     private func drawTheHang() {
-        
         let path = UIBezierPath()
         UIColor.black.set()
         path.lineWidth = 3
@@ -150,7 +145,6 @@ class HDrawingBoard: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        
         drawTheHang()
         
         var startX: CGFloat = 0

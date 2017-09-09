@@ -214,7 +214,6 @@ class MSGameEngine {
         }
         
         if(position + cellsPerRow < cellsPerRow * cellsPerRow) {
-            
             if(cells[position + cellsPerRow].isSelected == false) {
                 cells[position + cellsPerRow].isSelected = true
                 if(cells[position + cellsPerRow].titleLabel?.text == "M") {

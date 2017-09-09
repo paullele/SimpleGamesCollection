@@ -64,17 +64,14 @@ class HGameViewController: UIViewController {
     }
     
     private func createHangKeyboard(x: CGFloat, y: CGFloat) {
-        
         var tag = 97
         var y = y - 120
         
         for i in 0...2 {
-            
             var x = x
             x = x - (30 * (9 - CGFloat(i)))/2
             
             for _ in 0..<9-i {
-                
                 constructObjectRect(x: x, y: y, width: 30, height: 30, storeIn: &arrayOfObjs, withTag: &tag)
                 
                 tag += 1
@@ -89,7 +86,6 @@ class HGameViewController: UIViewController {
     }
     
     @objc func onKey(_ sender: UIButton) {
-        
         displayWord.text = " "
         correctGuess = false
         var i = 0
@@ -97,7 +93,6 @@ class HGameViewController: UIViewController {
         sender.setTitleColor(UIColor.gray, for: .normal)
         
         for char in wordToGuess.characters {
-            
             if String(char) == sender.currentTitle! {
                 arrayOfChars[i] = Character(sender.currentTitle!)
                 displayWord.text = displayWord.text! + sender.currentTitle! + " "
@@ -123,16 +118,13 @@ class HGameViewController: UIViewController {
     }
     
     private func chooseWord(inRange range: Int) -> Int {
-        
         return Int(arc4random_uniform(UInt32(range)))
     }
     
     private func checkGameStatus() {
-        
         var gameEnded = true
         
         if drawingBoard.attempts < 6 {
-            
             for item in arrayOfChars {
                 if item == "_" {
                     gameEnded = false
@@ -143,12 +135,9 @@ class HGameViewController: UIViewController {
                 for key in arrayOfObjs {
                     key.isEnabled = false
                 }
-                
                 gameStatus.text = "You won!"
             }
-            
         } else {
-            
             displayWord.text = wordToGuess
             gameStatus.text = "Game Over"
             
@@ -159,7 +148,6 @@ class HGameViewController: UIViewController {
     }
     
     @objc private func handleNewGame() {
-        
         wordToGuess = assignWord(wordsContainer: wordsContainer, totalWords: totalWords)
         
         gameStatus.text = " "

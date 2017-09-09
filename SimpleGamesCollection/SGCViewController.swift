@@ -10,7 +10,6 @@ import UIKit
 
 class SGCViewController: UIViewController {
     
-    
     @IBOutlet weak var gameSelectionStack: UIStackView!
     
     @IBAction func playTicTacToe(_ sender: UIButton) {

@@ -21,10 +21,7 @@ class NPMenuViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-        
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {        
         if segue.identifier == "Easy" {
             if let gameViewControler = segue.destination as? NPGameViewController {
                 gameViewControler.gridSize = 3

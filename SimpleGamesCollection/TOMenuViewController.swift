@@ -10,9 +10,7 @@ import UIKit
 
 class TOMenuViewControlelr: UIViewController {
     
-    
     @IBAction func singlePlayer(_ sender: UIButton) {
-        
         let alert = UIAlertController(title: "21 sticks", message: "Would you like to go first?", preferredStyle: .alert)
         
         let yesAction = UIAlertAction(title: "Yes", style: .default, handler: { [unowned self]
